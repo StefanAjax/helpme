@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-50 min-h-screen flex flex-col items-center p-4">
+  <body
+    class="bg-gray-50 min-h-screen flex flex-col items-center p-4 caret-transparent"
+  >
     <div class="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 mt-6">
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-xl font-bold">Lärarvy</h1>
+        <h1 class="text-2xl font-bold">helpme.ntig.dev</h1>
         <button
           id="createBtn"
           class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow transition-colors"
@@ -18,12 +20,12 @@
         </button>
       </div>
 
-      <div class="text-center">Kö-ID:</div>
+      <div class="text-center text-xl">Kö-ID</div>
       <div
         id="queueCode"
-        class="text-8xl font-semibold mb-4 text-center pb-6 rounded-3xl shadow-xl/30"
+        class="text-8xl font-semibold mb-4 text-center pb-6 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 rounded-3xl shadow-lg shadow-yellow-500/50 px-12 py-6 mb-6 transition-all duration-300 max-w-md mx-auto hover:scale-150"
       >
-        (tom)
+        Ingen kö skapad
       </div>
 
       <div class="overflow-x-auto">
