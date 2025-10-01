@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hjälpkö - Lärarvy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col items-center p-4">
+    <div class="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 mt-6">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-xl font-bold">Lärarvy</h1>
+        <button
+          id="createBtn"
+          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow transition-colors"
+        >
+          Skapa ny kö
+        </button>
+      </div>
+
+      <div class="text-center">Kö-ID:</div>
+      <div
+        id="queueCode"
+        class="text-8xl font-semibold mb-4 text-center pb-6 rounded-3xl shadow-xl/30"
+      >
+        (tom)
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2 border-b w-1/6">#</th>
+              <th class="px-4 py-2 border-b w-2/3">Namn</th>
+              <th class="px-4 py-2 border-b w-1/6">Åtgärd</th>
+            </tr>
+          </thead>
+          <tbody id="queueBody">
+            <tr>
+              <td colspan="4" class="text-center py-4 text-gray-500">
+                Ingen kö just nu
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const createBtn = document.getElementById("createBtn");
+      const queueCodeEl = document.getElementById("queueCode");
+      const queueBody = document.getElementById("queueBody");
+
+      let currentCode = null;
+
+      // Restore queue code if saved
+      const savedCode = localStorage.getItem("teacherQueueCode");
+      if (savedCode) attachToQueue(savedCode);
+
+      createBtn.onclick = () => socket.emit("queue:create");
+
+      socket.on("queue:created", (code) => {
+        localStorage.setItem("teacherQueueCode", code);
+        attachToQueue(code);
+      });
+
+      function attachToQueue(code) {
+        currentCode = code;
+        queueCodeEl.textContent = code;
+
+        socket.offAny();
+        socket.on(`queue:update:${code}`, renderQueue);
+
+        // Fetch current state
+        socket.emit("queue:get", code);
+      }
+
+      function renderQueue(entries) {
+        if (!entries.length) {
+          queueBody.innerHTML =
+            '<tr><td colspan="4" class="text-center py-4 text-gray-500">Kön är tom</td></tr>';
+          return;
+        }
+
+        queueBody.innerHTML = entries
+          .map(
+            (e, i) => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 border-b">${i + 1}</td>
+          <td class="px-4 py-2 border-b">${e.name}</td>
+          <td class="px-4 py-2 border-b">
+            <button onclick="removeEntry(${
+              e.id
+            })" class="text-red-500 hover:text-red-700 font-medium">Ta bort</button>
+          </td>
+        </tr>
+      `
+          )
+          .join("");
+      }
+
+      window.removeEntry = (id) => {
+        if (!currentCode) return;
+        socket.emit("queue:remove", { code: currentCode, id });
+      };
+
+      socket.on("queue:error", (err) => alert(err.message));
+    </script>
+  </body>
+</html>
