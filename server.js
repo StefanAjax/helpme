@@ -21,7 +21,6 @@ app.get('/teach', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'teacher.html'));
 });
 
-
 // Store multiple queues
 // queues = { CODE: { code: "AB12", entries: [], nextId: 1 } }
 let queues = {};
