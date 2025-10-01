@@ -4,12 +4,21 @@ const queueCodeEl = document.getElementById("queueCode");
 const queueBody = document.getElementById("queueBody");
 
 let currentCode = null;
+let currentQueueEntries = [];
 
 // Restore queue code if saved
 const savedCode = localStorage.getItem("teacherQueueCode");
 if (savedCode) attachToQueue(savedCode);
 
-createBtn.onclick = () => socket.emit("queue:create");
+createBtn.onclick = () => {
+  if (currentQueueEntries.length > 0) {
+    const confirmNew = confirm(
+      "Kön innehåller fortfarande elever. Vill du verkligen skapa en ny kö? Detta kommer rensa den nuvarande kön."
+    );
+    if (!confirmNew) return;
+  }
+  socket.emit("queue:create");
+};
 
 socket.on("queue:created", (code) => {
   localStorage.setItem("teacherQueueCode", code);
@@ -20,14 +29,19 @@ function attachToQueue(code) {
   currentCode = code;
   queueCodeEl.textContent = code;
 
-  socket.offAny();
-  socket.on(`queue:update:${code}`, renderQueue);
+  // Leave any old queue room and stop listening
+  socket.off("queue:update");
+
+  // Join new queue room updates
+  socket.on("queue:update", renderQueue);
 
   // Fetch current state
   socket.emit("queue:get", code);
 }
 
 function renderQueue(entries) {
+  currentQueueEntries = entries; // keep track of current entries
+
   if (!entries.length) {
     queueBody.innerHTML =
       '<tr><td colspan="4" class="text-center py-4 text-gray-500">Kön är tom</td></tr>';

@@ -12,6 +12,7 @@ const savedName = localStorage.getItem("studentName");
 if (savedName) nameInput.value = savedName;
 
 const form = document.getElementById("queueForm");
+const codeField = document.getElementById("code");
 
 form.onsubmit = (e) => {
   e.preventDefault(); // Prevent page reload
@@ -25,12 +26,20 @@ form.onsubmit = (e) => {
   }
 
   localStorage.setItem("studentName", name);
+
+  // Leave previous queue room if exists
+  if (currentCode) {
+    socket.emit("queue:leave", currentCode);
+    socket.off("queue:update");
+  }
+
   currentCode = code;
 
+  // Join the new queue
   socket.emit("queue:add", { code, name });
 
-  socket.offAny();
-  socket.on(`queue:update:${code}`, renderQueue);
+  // Listen to updates for this queue
+  socket.on("queue:update", renderQueue);
 };
 
 function renderQueue(entries) {
@@ -60,4 +69,9 @@ function removeSelf(id) {
   socket.emit("queue:remove:self", { code: currentCode, id });
 }
 
-socket.on("queue:error", (err) => alert(err.message));
+socket.on("queue:error", (err) => {
+  codeField.value = "";
+  queueList.innerHTML = "Väntar på kö-ID…";
+  currentCode = null;
+  alert(err.message);
+});
