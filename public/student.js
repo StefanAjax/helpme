@@ -18,10 +18,15 @@ form.onsubmit = (e) => {
   e.preventDefault(); // Prevent page reload
 
   const code = codeInput.value.trim().toUpperCase();
-  const name = nameInput.value.trim();
+  let name = nameInput.value.trim();
 
   if (!code || !name) {
     alert("Ange både namn och kö-ID.");
+    return;
+  }
+
+  if (name.length > 32) {
+    alert("Namnet får max vara 32 tecken.");
     return;
   }
 

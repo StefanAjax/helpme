@@ -78,6 +78,10 @@ io.on("connection", (socket) => {
       socket.emit("queue:error", { message: "Fyll i både kö-id och namn." });
       return;
     }
+    if (name.length > 32) {
+      socket.emit("queue:error", { message: "Namnet får max vara 32 tecken." });
+      return;
+    }
 
     const q = queues[code];
     if (!q) {
