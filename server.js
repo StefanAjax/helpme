@@ -40,6 +40,23 @@ function generateCode() {
   return code;
 }
 
+// Sanitize user input: strip HTML tags and unsafe characters
+function sanitize(str, type = "text") {
+  str = String(str || "");
+  // Remove HTML tags
+  str = str.replace(/<[^>]*>/g, "");
+  // Remove control characters
+  str = str.replace(/[\x00-\x1F\x7F]/g, "");
+  if (type === "code") {
+    // Only allow uppercase letters and numbers
+    str = str.replace(/[^A-Z0-9]/g, "");
+  } else {
+    // Allow letters, numbers, spaces, and .,-'
+    str = str.replace(/[^\w .,'-]/g, "");
+  }
+  return str;
+}
+
 io.on("connection", (socket) => {
   console.log("socket connected:", socket.id);
 
@@ -78,10 +95,8 @@ io.on("connection", (socket) => {
 
   // Student joins queue
   socket.on("queue:add", ({ code, name }) => {
-    code = String(code || "")
-      .trim()
-      .toUpperCase();
-    name = String(name || "").trim();
+    code = sanitize(code, "code").trim().toUpperCase();
+    name = sanitize(name, "text").trim();
 
     if (!code || !name) {
       socket.emit("queue:error", { message: "Fyll i både kö-id och namn." });
