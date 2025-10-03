@@ -1,3 +1,4 @@
+
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -43,11 +44,15 @@ io.on("connection", (socket) => {
   console.log("socket connected:", socket.id);
 
   // Teacher creates a new queue
-  socket.on("queue:create", () => {
+  socket.on("queue:create", ({ teacherId }) => {
+    if (!teacherId) {
+      socket.emit("queue:error", { message: "Missing teacherId" });
+      return;
+    }
     // Remove any existing queue created by this teacher
     for (const code in queues) {
       const q = queues[code];
-      if (q.teacherId === socket.id) {
+      if (q.teacherId === teacherId) {
         // Notify students in this queue that it is closed
         q.entries.forEach((entry) => {
           io.to(entry.socketId).emit("queue:error", {
@@ -65,7 +70,7 @@ io.on("connection", (socket) => {
       code = generateCode();
     } while (queues[code]);
 
-    queues[code] = { code, entries: [], nextId: 1, teacherId: socket.id };
+    queues[code] = { code, entries: [], nextId: 1, teacherId };
     socket.join(code); // Teacher joins their own queue room
     socket.emit("queue:created", code);
     console.log("New queue created with code:", code);
@@ -131,12 +136,13 @@ io.on("connection", (socket) => {
     q.entries.splice(index, 1);
     io.to(code).emit("queue:update", q.entries);
     console.log(`Student removed themselves from queue ${code}:`, entry);
+    console.log("Current queues:", queues);
   });
 
   // Teacher removes a student
-  socket.on("queue:remove", ({ code, id }) => {
+  socket.on("queue:remove", ({ code, id, teacherId }) => {
     const q = queues[code];
-    if (!q || q.teacherId !== socket.id) return; // Only teacher can remove
+    if (!q || q.teacherId !== teacherId) return; // Only teacher can remove
 
     const index = q.entries.findIndex((e) => e.id === Number(id));
     if (index !== -1) {
@@ -147,9 +153,9 @@ io.on("connection", (socket) => {
   });
 
   // Teacher clears queue
-  socket.on("queue:clear", (code) => {
+  socket.on("queue:clear", ({ code, teacherId }) => {
     const q = queues[code];
-    if (!q || q.teacherId !== socket.id) return; // Only teacher
+    if (!q || q.teacherId !== teacherId) return; // Only teacher
 
     q.entries = [];
     io.to(code).emit("queue:update", q.entries);
@@ -183,6 +189,15 @@ io.on("connection", (socket) => {
       }
     }
   });
+      socket.on("queue:join:teacher", ({ code, teacherId }) => {
+      const q = queues[code];
+      if (q && q.teacherId === teacherId) {
+        socket.join(code);
+        socket.emit("queue:update", q.entries);
+      } else {
+        socket.emit("queue:error", { message: "Queue not found or unauthorized" });
+      }
+    });
 });
 
 const PORT = process.env.PORT || 3000;

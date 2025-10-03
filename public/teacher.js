@@ -1,4 +1,14 @@
 const socket = io();
+// Persistent teacher ID
+function getTeacherId() {
+  let id = localStorage.getItem('teacherId');
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    localStorage.setItem('teacherId', id);
+  }
+  return id;
+}
+const teacherId = getTeacherId();
 const createBtn = document.getElementById("createBtn");
 const queueCodeEl = document.getElementById("queueCode");
 const queueBody = document.getElementById("queueBody");
@@ -10,6 +20,7 @@ let currentQueueEntries = [];
 const savedCode = localStorage.getItem("teacherQueueCode");
 if (savedCode) attachToQueue(savedCode);
 
+
 createBtn.onclick = () => {
   if (currentQueueEntries.length > 0) {
     const confirmNew = confirm(
@@ -17,7 +28,7 @@ createBtn.onclick = () => {
     );
     if (!confirmNew) return;
   }
-  socket.emit("queue:create");
+  socket.emit("queue:create", { teacherId });
 };
 
 socket.on("queue:created", (code) => {
@@ -35,8 +46,9 @@ function attachToQueue(code) {
   // Join new queue room updates
   socket.on("queue:update", renderQueue);
 
-  // Fetch current state
-  socket.emit("queue:get", code);
+  // Rejoin the queue room to receive live updates
+  socket.emit("queue:get", code); // fetch current state
+  socket.emit("queue:join:teacher", { code, teacherId });
 }
 
 function renderQueue(entries) {
@@ -67,7 +79,7 @@ function renderQueue(entries) {
 
 window.removeEntry = (id) => {
   if (!currentCode) return;
-  socket.emit("queue:remove", { code: currentCode, id });
+  socket.emit("queue:remove", { code: currentCode, id, teacherId });
 };
 
 socket.on("queue:error", (err) => alert(err.message));
