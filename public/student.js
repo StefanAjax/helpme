@@ -75,8 +75,15 @@ function removeSelf(id) {
 }
 
 socket.on("queue:error", (err) => {
-  codeField.value = "";
-  queueList.innerHTML = "Väntar på kö-ID…";
-  currentCode = null;
+  // Only clear code and queue for critical errors
+  const criticalErrors = [
+    "Felaktigt kö-id.",
+    "Den gamla kön har stängts. Ange ny kökod för att delta igen."
+  ];
+  if (criticalErrors.includes(err.message)) {
+    codeField.value = "";
+    queueList.innerHTML = "Väntar på kö-ID…";
+    currentCode = null;
+  }
   alert(err.message);
 });
