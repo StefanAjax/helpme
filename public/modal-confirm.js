@@ -2,12 +2,12 @@
 // Usage: showConfirm(message, callback)
 
 function showConfirm(message, callback) {
-  let modal = document.getElementById('customConfirmModal');
+  let modal = document.getElementById("customConfirmModal");
   if (modal) modal.remove();
-  modal = document.createElement('div');
-  modal.id = 'customConfirmModal';
+  modal = document.createElement("div");
+  modal.id = "customConfirmModal";
   modal.innerHTML = `
-    <div class="fixed inset-0 bg-red bg-opacity-30 flex items-center justify-center z-50">
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
         <div class="mb-4 text-lg">${message}</div>
         <div class="flex justify-center gap-4">
@@ -18,11 +18,11 @@ function showConfirm(message, callback) {
     </div>
   `;
   document.body.appendChild(modal);
-  document.getElementById('confirmYesBtn').onclick = () => {
+  document.getElementById("confirmYesBtn").onclick = () => {
     modal.remove();
     callback(true);
   };
-  document.getElementById('confirmNoBtn').onclick = () => {
+  document.getElementById("confirmNoBtn").onclick = () => {
     modal.remove();
     callback(false);
   };
