@@ -69,10 +69,21 @@ function renderQueue(entries) {
     .join("");
 }
 
+
 function removeSelf(id) {
   if (!currentCode) return;
   socket.emit("queue:remove:self", { code: currentCode, id });
 }
+
+// Warn student before closing tab if in a queue
+window.addEventListener("beforeunload", (e) => {
+  // Check if the 'Ta bort mig' button is present and visible
+  const removeBtn = document.querySelector('button[onclick^="removeSelf"]');
+  if (removeBtn && removeBtn.offsetParent !== null) {
+    e.preventDefault();
+    e.returnValue = ""; // triggers browser's generic warning
+  }
+});
 
 socket.on("queue:error", (err) => {
   // Only clear code and queue for critical errors
