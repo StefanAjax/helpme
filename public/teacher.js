@@ -23,12 +23,16 @@ if (savedCode) attachToQueue(savedCode);
 
 createBtn.onclick = () => {
   if (currentQueueEntries.length > 0) {
-    const confirmNew = confirm(
-      "Kön innehåller fortfarande elever. Vill du verkligen skapa en ny kö? Detta kommer rensa den nuvarande kön."
+    showConfirm(
+      "Kön innehåller fortfarande elever. Vill du verkligen skapa en ny kö? Detta kommer rensa den nuvarande kön.",
+      (confirmNew) => {
+        if (!confirmNew) return;
+        socket.emit("queue:create", { teacherId });
+      }
     );
-    if (!confirmNew) return;
+  } else {
+    socket.emit("queue:create", { teacherId });
   }
-  socket.emit("queue:create", { teacherId });
 };
 
 socket.on("queue:created", (code) => {
@@ -82,4 +86,4 @@ window.removeEntry = (id) => {
   socket.emit("queue:remove", { code: currentCode, id, teacherId });
 };
 
-socket.on("queue:error", (err) => alert(err.message));
+socket.on("queue:error", (err) => showModal(err.message));

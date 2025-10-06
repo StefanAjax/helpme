@@ -7,7 +7,7 @@
     <link href="./output.css" rel="stylesheet" />
   </head>
   <body
-    class="bg-gray-50 min-h-screen flex flex-col items-center p-4 caret-transparent"
+    class="bg-gray-200 min-h-screen flex flex-col items-center p-4 caret-transparent"
   >
     <div class="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 mt-6">
       <div class="flex justify-between items-center mb-4">
@@ -19,10 +19,10 @@
         </button>
       </div>
 
-      <div class="text-center text-xl">Kö-ID</div>
+      <div class="text-center text-2xl bg-yellow-400 pt-4">Kö-ID</div>
       <div
         id="queueCode"
-        class="text-6xl font-semibold mb-4 text-center pb-6 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 rounded-3xl shadow-lg shadow-yellow-500/50 px-12 py-6 mb-6 transition-all duration-300 max-w-md mx-auto hover:scale-150 hover:text-7xl"
+        class="text-8xl font-semibold mb-4 text-center pb-6 bg-yellow-400 text-yellow-900 shadow-lg px-12 pb-6 mb-6 mx-auto max-w-3xl"
       >
         Ingen kö skapad
       </div>
@@ -48,14 +48,17 @@
     </div>
 
     <div
-      class="mt-6 px-8 py-8 bg-blue-500 text-white font-semibold rounded-full shadow-md hover:shadow-lg border border-blue-300 bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 hover:scale-150 transition-all"
+      class="mt-6 px-8 py-8 bg-blue-500 text-white font-semibold shadow-md border border-blue-300 bg-gradient-to-r from-blue-400 to-blue-600"
     >
-      <div class="text-4xl">helpme.ntig.dev</div>
+    <div class="text-xl text-center">För att ansluta till kön, gå till</div>  
+    <div class="text-7xl">helpme.ntig.dev</div>
      
     </div>
-     <div class="text-gray-300 text-md py-4">V1.2.0</div>
+     <div class="text-gray-400 text-md py-4">V1.2.0</div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/teacher.js"></script>
+  <script src="/modal.js"></script>
+  <script src="/modal-confirm.js"></script>
   </body>
 </html>

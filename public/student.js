@@ -21,12 +21,12 @@ form.onsubmit = (e) => {
   let name = nameInput.value.trim();
 
   if (!code || !name) {
-    alert("Ange både namn och kö-ID.");
+  showModal("Ange både namn och kö-ID.");
     return;
   }
 
   if (name.length > 32) {
-    alert("Namnet får max vara 32 tecken.");
+  showModal("Namnet får max vara 32 tecken.");
     return;
   }
 
@@ -96,5 +96,5 @@ socket.on("queue:error", (err) => {
     queueList.innerHTML = "Väntar på kö-ID…";
     currentCode = null;
   }
-  alert(err.message);
+  showModal(err.message);
 });

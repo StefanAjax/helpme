@@ -183,7 +183,7 @@ io.on("connection", (socket) => {
     if (q) {
       socket.emit("queue:update", q.entries);
     } else {
-      socket.emit("queue:error", { message: "Queue not found" });
+      socket.emit("queue:error", { message: "Kön existerar inte. Prova att skapa en ny." });
     }
   });
 
@@ -210,7 +210,7 @@ io.on("connection", (socket) => {
         socket.join(code);
         socket.emit("queue:update", q.entries);
       } else {
-        socket.emit("queue:error", { message: "Queue not found or unauthorized" });
+        socket.emit("queue:error", { message: "Kön existerar inte eller otillåten åtkomst. Prova att skapa en ny." });
       }
     });
 });
