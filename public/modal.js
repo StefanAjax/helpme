@@ -7,7 +7,7 @@ function showModal(message) {
     modal = document.createElement('div');
     modal.id = 'customModal';
     modal.innerHTML = `
-      <div class="fixed inset-0 bg-red bg-opacity-30 flex items-center justify-center z-50">
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
           <div class="mb-4 text-lg">${message}</div>
           <button id="closeModalBtn" class="bg-red-500 text-white px-4 py-2 rounded">OK</button>
