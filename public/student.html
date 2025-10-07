@@ -14,7 +14,7 @@
       
     <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6 mt-12">
 
-      <form id="queueForm" class="flex items-end gap-4">
+      <form id="queueForm" class="flex items-end gap-4 flex-wrap">
         <!-- Queue-ID -->
         <div class="flex-1">
           <label class="block mb-1 font-medium caret-transparent">Kö-ID</label>
@@ -27,7 +27,7 @@
         </div>
 
         <!-- Name -->
-        <div class="flex-1">
+        <div class="flex-3">
           <label class="block mb-1 font-medium caret-transparent">Namn</label>
           <input
             id="name"
@@ -56,7 +56,7 @@
       </div>
 
     </div>
-      <div class="space-y-2 pt-10 text-gray-700 caret-transparent">
+      <div class="space-y-2 pt-10- text-gray-700 caret-transparent">
         Att stänga denna flik innebär att du lämnar kön.
       </div>
     <script src="/socket.io/socket.io.js"></script>
